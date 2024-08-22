@@ -2,9 +2,10 @@ import re
 import json
 import base64
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from requests import get
+from .models import BotUser
 
 
 def lfm_access_token(url_params):
@@ -32,8 +33,31 @@ def login(request):
         url='https://api2.lowfuelmotorsport.com/api/user',
         headers={'Authorization': 'Bearer ' + at}
     ).json()
-    return HttpResponse()
+    if BotUser.objects.filter(tg_id=data['tg_id']).exists():
+        return HttpResponse('User already authorized!')
+    BotUser.objects.create(tg_id=data['tg_id'], access_token=at)
+    response = redirect('success')
+    response.set_cookie('tg_id', data['tg_id'])
+    return response
 
 
-def success(request):
-    return HttpResponse('hello world')
+def success(request, tg_id=None):
+    try:
+        tg_id = request.COOKIES['tg_id']
+    except KeyError:
+        return redirect('auth')
+    user = get_object_or_404(BotUser, tg_id=tg_id)
+    lfm_user = get(
+        url='https://api2.lowfuelmotorsport.com/api/user',
+        headers={'Authorization': 'Bearer ' + user.access_token}
+    ).json()
+    return render(
+        request,
+        template_name='success.html',
+        context={
+            'avatar': lfm_user['avatar'],
+            'user_fullname': f'{lfm_user["vorname"]} {lfm_user["nachname"]}',
+            'safety_rating': lfm_user['safety_rating'],
+            'elo_rating': lfm_user['rating_by_sim'][0]['rating']
+        }
+    )

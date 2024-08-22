@@ -1,10 +1,29 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <title>Авторизация</title>
 
+    <link rel="shortcut icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css">
+</head>
+<body style="background-image: url({% static 'img/background.jpeg' %}); background-position: center;">
+    <div class="authorization_card">
+        <div class="card_title">
+            <img class="logo" src="{{ avatar }}" alt="">
+            <div class="data">
+                <h2 class="title">{{ user_fullname }}</h2>
+                <div class="ratings_holder">
+                    <div class="safety_rating"> SR {{ safety_rating }}</div>
+                    <div class="elo_rating">ELO {{ elo_rating }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="success">
+            <svg style="width: 30px; margin-right: 20px;" fill="#ffffff" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1743.858 267.012 710.747 1300.124 176.005 765.382 0 941.387l710.747 710.871 1209.24-1209.116z" fill-rule="evenodd"></path> </g></svg>
+            <div class="center">You have successfully completed authorization!</div>
+        </div>
+    </div>
 </body>
 </html>
